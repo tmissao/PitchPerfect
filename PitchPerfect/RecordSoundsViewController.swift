@@ -27,11 +27,11 @@ class RecordSoundsViewController: UIViewController {
     
     // MARK: - Alerts
     
-    struct Alerts {
-        static let AudioErrorTitle = "Error"
-        static let AudioErrorMessage = "Recording was not successful"
-        static let DismissAlert = "Dismiss"
-
+    enum Alerts : String {
+        case AudioErrorTitle = "Error",
+        AudioErrorMessage = "Recording was not successful",
+        DismissAlert = "Dismiss"
+        
     }
     
     override func viewDidLoad() {
@@ -52,17 +52,9 @@ class RecordSoundsViewController: UIViewController {
     ///
     /// - Parameter isRecording: indicates if the audio is being recorded
     private func configureUI(isRecording: Bool) {
-        if isRecording {
-            stopRecordingButton.isEnabled = true
-            recordButton.isEnabled = false
-            recordingLabel.text = AppConstants.RecordingInProgress
-            
-        } else {
-            stopRecordingButton.isEnabled = false
-            recordButton.isEnabled = true
-            recordingLabel.text = AppConstants.TapToRecord
-
-        }
+        stopRecordingButton.isEnabled = isRecording
+        recordButton.isEnabled = !isRecording
+        recordingLabel.text = isRecording ? AppConstants.RecordingInProgress : AppConstants.TapToRecord
     }
     
     
@@ -108,7 +100,7 @@ class RecordSoundsViewController: UIViewController {
     
     fileprivate func showAlert(_ title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: Alerts.DismissAlert, style: .default, handler: nil))
+        alert.addAction(UIAlertAction(title: Alerts.DismissAlert.rawValue, style: .default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
 }
@@ -116,13 +108,13 @@ class RecordSoundsViewController: UIViewController {
 
 // MARK: - AVAudioRecorderDelegate
 extension RecordSoundsViewController : AVAudioRecorderDelegate {
-
+    
     func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
         if flag {
             performSegue(withIdentifier: AppConstants.SegueIdentifier, sender: audioRecorder.url)
             
         } else {
-            showAlert(Alerts.AudioErrorTitle, message: Alerts.AudioErrorMessage)
+            showAlert(Alerts.AudioErrorTitle.rawValue, message: Alerts.AudioErrorMessage.rawValue)
         }
     }
 }
