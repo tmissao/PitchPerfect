@@ -18,7 +18,11 @@ class PlaySoundsViewController: UIViewController {
     @IBOutlet weak var echoButton: UIButton!
     @IBOutlet weak var reverbButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
-
+    @IBOutlet weak var outerStackView: UIStackView!
+    @IBOutlet weak var audioEffectsStackView: UIStackView!
+    @IBOutlet weak var innerAudioEffectsStackView1: UIStackView!
+    @IBOutlet weak var innerAudioEffectsStackView2: UIStackView!
+    @IBOutlet weak var innerAudioEffectsStackView3: UIStackView!
     
     var recordedAudioURL: URL!
     var audioFile: AVAudioFile!
@@ -35,10 +39,57 @@ class PlaySoundsViewController: UIViewController {
         setupAudio()
     }
     
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+    
+        // Update stackviews orientation before calculate layout constants
+        rearrangeStackViewAxis(isPortrait: getLayoutOrientation() == .portrait)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         configureUI(.notPlaying)
-
+    }
+    
+    /// Obtains application orientation
+    ///
+    /// - Returns: application orientation
+    func getLayoutOrientation() -> UIInterfaceOrientation {
+        return UIApplication.shared.statusBarOrientation
+    }
+    
+    
+    /// Changes Axis of the inner stackviews
+    ///
+    /// - Parameter axisStyle: new stackview axis
+    func setInnerStackViewAxis(axisStyle: UILayoutConstraintAxis) {
+        innerAudioEffectsStackView1.axis = axisStyle
+        innerAudioEffectsStackView2.axis = axisStyle
+        innerAudioEffectsStackView3.axis = axisStyle
+    }
+    
+    /// Changes Axis of outer stackview
+    ///
+    /// - Parameter axisStyle: new stackview axis
+    func setOuterStackViewAxis(axisStyle: UILayoutConstraintAxis) {
+        outerStackView.axis = axisStyle
+        audioEffectsStackView.axis = axisStyle
+    }
+    
+    
+    
+    /// Rearrange orientation of stackview
+    ///
+    /// - Parameter isPortrait: indicates the layout orientation is portrait
+    func rearrangeStackViewAxis(isPortrait: Bool) {
+        if isPortrait {
+            setOuterStackViewAxis(axisStyle: .vertical)
+            setInnerStackViewAxis(axisStyle: .horizontal)
+        
+        } else {
+            setOuterStackViewAxis(axisStyle: .horizontal)
+            setInnerStackViewAxis(axisStyle: .vertical)
+        }
     }
 
     // MARK: - UIActions
